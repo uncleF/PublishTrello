@@ -22,7 +22,7 @@ var PUBLISH_TRELLO = (function() {
     link = initUrl;
     dir = initDir ? initDir : 'app/output';
     file = initFile ? initFile : 'trelloBoard';
-    css = initCSS ? initCSS : 'app/css/styles.css';
+    css = initCSS ? initCSS : './app/css/styles.css';
     filePath = dir + '/' + file;
     getData();
   }
