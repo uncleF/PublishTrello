@@ -2,7 +2,7 @@
   "name": "publishtrello",
   "version": "0.0.1",
   "description": "PublishTrello",
-  "main": "app/app.js",
+  "main": "app/publish.js",
   "private": true,
   "dependencies": {
     "cssmin": "^0.4.3",

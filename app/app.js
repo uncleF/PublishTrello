@@ -6,9 +6,6 @@ var options = {
 	pdf: true,
 	epub: true
 };
-var url = 'http://192.168.1.101:8000/data/board.json';
-var dir = 'app/trelloBoards';
-var file = 'trelloBoard';
-var css = 'app/css/styles.css';
+var dataURL = 'http://192.168.1.101:8000/data/board.json';
 
-publish.init(options, url, dir, file, css);
+publish.init(options, dataURL);

@@ -18,13 +18,12 @@ var PUBLISH_TRELLO = (function() {
   var filePath;
 
   function init(initOptions, initUrl, initDir, initFile, initCSS) {
-    options = initOptions;
+    options = initOptions ? initOptions : {md: true};
     link = initUrl;
-    dir = initDir;
-    file = initFile;
-    css = initCSS;
+    dir = initDir ? initDir : 'app/output';
+    file = initFile ? initFile : 'trelloBoard';
+    css = initCSS ? initCSS : 'app/css/styles.css';
     filePath = dir + '/' + file;
-    console.log(options);
     getData();
   }
 
