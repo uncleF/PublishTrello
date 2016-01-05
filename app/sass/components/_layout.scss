@@ -1,0 +1,16 @@
+/* Layout Base */
+
+html {
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  $body-maxWidth: ($desktop-min - $gap * 2);
+
+  @include tx-set-boundaries(none, $body-maxWidth);
+  @include tx-scroll-bar(true);
+  position: relative;
+  padding: 0 $gap;
+  background: $background;
+}

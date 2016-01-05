@@ -1,0 +1,33 @@
+{
+  "folders":
+  [
+    {
+      "folder_exclude_patterns":
+      [
+        "*"
+      ],
+      "file_exclude_patterns":
+      [
+        "*.zip",
+        "*.sublime-project"
+      ],
+      "follow_symlinks": true,
+      "name": "PublishTrello: Project",
+      "path": "."
+    }, {
+      "folder_exclude_patterns":
+      [
+        "css",
+        "data",
+        "sass"
+      ],
+      "follow_symlinks": true,
+      "name": "PublishTrello: App",
+      "path": "app/"
+    }, {
+      "follow_symlinks": true,
+      "name": "PublishTrello: Sass",
+      "path": "app/sass/"
+    }
+  ]
+}

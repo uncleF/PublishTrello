@@ -1,0 +1,368 @@
+linters:
+  BorderZero:
+    enabled: true
+
+  CapitalizationInSelector:
+    enabled: true
+
+  ColorKeyword:
+    enabled: true
+
+  Comment:
+    enabled: false
+
+  DebugStatement:
+    enabled: true
+
+  DeclarationOrder:
+    enabled: true
+
+  DuplicateProperty:
+    enabled: false
+
+  ElsePlacement:
+    enabled: true
+    style: same_line
+
+  EmptyRule:
+    enabled: true
+
+  FinalNewline:
+    enabled: true
+    present: true
+
+  HexLength:
+    enabled: true
+    style: short
+
+  HexNotation:
+    enabled: true
+    style: lowercase
+
+  HexValidation:
+    enabled: true
+
+  IdSelector:
+    enabled: true
+
+  IdWithExtraneousSelector:
+    enabled: true
+
+  ImportPath
+    leading_underscore: true
+
+  Indentation:
+    enabled: true
+    width: 2
+    character: space
+
+  LeadingZero:
+    enabled: true
+    style: exclude_zero
+
+  MergeableSelector:
+    enabled: true
+    force_nesting: true
+
+  NameFormat:
+    enabled: false
+
+  NestingDepth:
+    enabled: true
+    max_depth: 4
+
+  PlaceholderInExtend:
+    enabled: true
+
+  PropertySortOrder:
+    enabled: true
+    order:
+      - position
+      - z-index
+      - top
+      - right
+      - bottom
+      - left
+      - content
+      - counter-increment
+      - counter-reset
+      - quotes
+      - appearance
+      - display
+      - float
+      - clear
+      - flex-flow
+      - flex-direction
+      - flex-wrap
+      - justify-content
+      - align-items
+      - align-content
+      - order
+      - flex-grow
+      - flex-shrink
+      - flex-basis
+      - flex
+      - align-self
+      - overflow
+      - overflow-x
+      - overflow-y
+      - clip
+      - box-sizing
+      - box-decoration-break
+      - width
+      - height
+      - min-width
+      - min-height
+      - max-width
+      - max-height
+      - resize
+      - padding
+      - padding-top
+      - padding-right
+      - padding-bottom
+      - padding-left
+      - border
+      - border-spacing
+      - border-collapse
+      - border-width
+      - border-style
+      - border-color
+      - border-top
+      - border-top-width
+      - border-top-style
+      - border-top-color
+      - border-right
+      - border-right-width
+      - border-right-style
+      - border-right-color
+      - border-bottom
+      - border-bottom-width
+      - border-bottom-style
+      - border-bottom-color
+      - border-left
+      - border-left-width
+      - border-left-style
+      - border-left-color
+      - border-radius
+      - border-top-left-radius
+      - border-top-right-radius
+      - border-bottom-right-radius
+      - border-bottom-left-radius
+      - border-image
+      - border-image-source
+      - border-image-slice
+      - border-image-width
+      - border-image-outset
+      - border-image-repeat
+      - border-top-image
+      - border-right-image
+      - border-bottom-image
+      - border-left-image
+      - border-corner-image
+      - border-top-left-image
+      - border-top-right-image
+      - border-bottom-right-image
+      - border-bottom-left-image
+      - margin
+      - margin-top
+      - margin-right
+      - margin-bottom
+      - margin-left
+      - color
+      - background
+      - background-color
+      - background-image
+      - background-attachment
+      - background-position
+      - background-position-x
+      - background-position-y
+      - background-clip
+      - background-origin
+      - background-size
+      - background-repeat
+      - outline
+      - outline-width
+      - outline-style
+      - outline-color
+      - outline-offset
+      - box-decoration-break
+      - box-shadow
+      - font
+      - font-weight
+      - font-style
+      - font-variant
+      - font-size-adjust
+      - font-stretch
+      - font-size
+      - font-family
+      - font-feature-settings
+      - src
+      - text-align
+      - text-align-last
+      - text-decoration
+      - text-decoration-color
+      - text-decoration-style
+      - text-emphasis
+      - text-emphasis-position
+      - text-emphasis-style
+      - text-emphasis-color
+      - text-indent
+      - text-justify
+      - text-outline
+      - text-transform
+      - text-wrap
+      - text-overflow
+      - text-overflow-ellipsis
+      - text-overflow-mode
+      - text-size-adjust
+      - text-shadow
+      - text-rendering
+      - letter-spacing
+      - line-height
+      - vertical-align
+      - white-space
+      - word-spacing
+      - word-wrap
+      - word-break
+      - tab-size
+      - -epub-hyphens
+      - hyphens
+      - unicode-bidi
+      - direction
+      - columns
+      - column-span
+      - column-width
+      - column-count
+      - column-fill
+      - column-gap
+      - column-rule
+      - column-rule-width
+      - column-rule-style
+      - column-rule-color
+      - page-break-before
+      - break-before
+      - page-break-inside
+      - break-inside
+      - page-break-after
+      - break-after
+      - orphans
+      - widows
+      - list-style
+      - list-style-position
+      - list-style-type
+      - list-style-image
+      - table-layout
+      - caption-side
+      - empty-cells
+      - visibility
+      - opacity
+      - -ms-interpolation-mode
+      - filter
+      - cursor
+      - pointer-events
+      - touch-action
+      - nav-index
+      - nav-up
+      - nav-right
+      - nav-down
+      - nav-left
+      - zoom
+      - max-zoom
+      - min-zoom
+      - user-zoom
+      - orientation
+      - transform
+      - transform-origin
+      - transition
+      - transition-delay
+      - transition-timing-function
+      - transition-duration
+      - transition-property
+      - animation
+      - animation-name
+      - animation-duration
+      - animation-play-state
+      - animation-timing-function
+      - animation-delay
+      - animation-iteration-count
+      - animation-direction
+      - stroke
+      - stroke-width
+      - stroke-dasharray
+      - stroke-dashoffset
+      - stroke-linecap
+      - fill
+      - vector-effect
+      - mask
+      - clip-path
+      - -premailer-width
+      - -premailer-cellpadding
+      - -premailer-cellspacing
+
+  PropertySpelling:
+    enabled: true
+    extra_properties: ["appearance", "text-size-adjust", "stroke", "stroke-width", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "fill", "vector-effect", "mask", "clip-path", "-premailer-width", "-premailer-cellpadding", "-premailer-cellspacing"]
+
+  QualifyingElement:
+    enabled: true
+    allow_element_with_attribute: false
+    allow_element_with_class: false
+    allow_element_with_id: false
+
+  SelectorDepth:
+    enabled: true
+    max_depth: 4
+
+  SelectorFormat:
+    enabled: false
+
+  Shorthand:
+    enabled: true
+
+  SingleLinePerProperty:
+    enabled: true
+
+  SpaceAfterComma:
+    enabled: true
+
+  SpaceAfterPropertyColon:
+    enabled: true
+
+  SpaceAfterPropertyName:
+    enabled: true
+
+  SpaceBeforeBrace:
+    enabled: true
+    allow_single_line_padding: false
+
+  SpaceBetweenParens:
+    enabled: true
+    spaces: 0
+
+  StringQuotes:
+    enabled: true
+    style: single_quotes
+
+  TrailingSemicolonAfterPropertyValue:
+    enabled: true
+
+  UnnecessaryMantissa:
+    enabled: true
+
+  UrlFormat:
+    enabled: true
+
+  UrlQuotes:
+    enabled: false
+
+  VendorPrefixes:
+    enabled: true
+    identifier_list: base
+    include: []
+    exclude: []
+
+  ZeroUnit:
+    enabled: true
+
+  Compass::*:
+    enabled: false

@@ -1,0 +1,417 @@
+// Page Boundaries
+
+@mixin tx-set-boundaries($minw: $desktop-min, $maxw: $desktop-max, $minh: 100%, $center: true) {
+  @if $minw != none and $minw != 0 {
+    min-width: $minw;
+  }
+  @if $maxw != none and $maxw != 0 {
+    max-width: $maxw;
+  }
+  @if $minh != none and $minh != 0 {
+    min-height: $minh;
+  }
+  @if $center == true {
+    margin: 0 auto;
+  }
+}
+
+
+
+// Page Scroll
+
+@mixin tx-scroll-bar($cond: false, $autohide: true) {
+  @if $cond == true {
+    overflow-x: auto;
+    overflow-y: scroll;
+  } @else {
+    overflow: auto;
+  }
+  @if $autohide == true {
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+}
+
+
+
+// Focus
+
+@mixin tx-focus-outline($wd: 1px, $st: dotted, $cl: $focus-outline, $off: 3px) {
+  outline: $wd $st $cl;
+  @if $off != none and $off != 0 {
+    outline-offset: $off;
+  }
+}
+
+
+
+// Typography Baseline
+
+@mixin tx-baseline($fz: $fontSize, $fall: $tx-remFallback) {
+  font-size: $fz;
+  line-height: $lineHeight;
+  line-height: ($lineHeight / $fontSize) * $fontSizeQuotient * 1rem;
+}
+
+
+
+// Inline Block
+
+@mixin tx-inline-block($ie: $tx-IE) {
+  @if $ie != true {
+    display: inline-block;
+  } @else {
+    display: inline;
+    zoom: 1;
+  }
+}
+
+
+
+// Pseudo Element
+
+@mixin tx-pseudo($pos: absolute, $dsp: block, $cnt: '', $ie: $tx-IE) {
+  @if $dsp == 'inline-block' {
+    @include tx-inline-block;
+  } @else {
+    display: $dsp;
+  }
+  @if not $ie {
+    content: '' + $cnt;
+  }
+  position: $pos;
+}
+
+
+
+// Inline-Block Vertical Aligner
+
+@mixin tx-pseudo-va() {
+  @include tx-pseudo(relative, inline-block);
+  width: 0;
+  height: 100%;
+  vertical-align: middle;
+}
+
+
+
+// Pseudo Element (IE Hack)
+
+@mixin tx-pseudo-ie($before: true, $after: true, $class: '', $beforeContent: '', $afterContent: '') {
+  $beforeClass: ieBefore + $class;
+  $afterClass: ieAfter + $class;
+  @if $before == true and $after == true {
+    zoom: unquote('expression(this.runtimeStyle.zoom = 1, insertAdjacentHTML("afterBegin", "<i class="' + $beforeClass + '">' + $beforeContent + '</i>"), insertAdjacentHTML("beforeEnd", "<i class="' + $afterClass + '">' + $afterContent + '</i>"))');
+  } @else if $before == true {
+    zoom: unquote('expression(this.runtimeStyle.zoom = 1, insertAdjacentHTML("afterBegin", "<i class="' + $beforeClass + '">' + $beforeContent + '</i>"))');
+  } @else {
+    zoom: unquote('expression(this.runtimeStyle.zoom = 1, insertAdjacentHTML("beforeEnd", "<i class="' + $afterClass + '">' + $afterContent + '</i>"))');
+  }
+}
+
+
+
+// Max Width
+
+@mixin tx-max-width($width) {
+  max-width: $width;
+  max-width: ($width / $fontSize) * 1rem;
+}
+
+
+
+//  Height in Grid Units
+
+@mixin tx-grid-height($lines: 1, $brdw: 0, $lh: true, $pd: false, $fall: $tx-remFallback) {
+  @if $pd == true {
+    @if $fall == true {
+      padding: txf-rhythm-fallback($lines, 2 * $brdw) 0 0;
+    }
+    padding: txf-rhythm($lines, 2 * $brdw) 0 0;
+  } @else {
+    @if $fall == true {
+      height: txf-rhythm-fallback($lines, 2 * $brdw);
+    }
+    height: txf-rhythm($lines, 2 * $brdw);
+  }
+  @if $lh == true {
+    @if $fall == true {
+      line-height: txf-rhythm-fallback($lines, 2 * $brdw);
+    }
+    line-height: txf-rhythm($lines, 2 * $brdw);
+  }
+}
+
+
+
+// Font Size
+
+@mixin tx-font-size($fzn, $ln: 1, $fall: $tx-remFallback) {
+  @if $fall == true {
+    font-size: $fzn;
+  }
+  font-size: #{$fzn / $fontSize}rem;
+  @if $ln != none {
+    @if $fall == true and $ln != 0 {
+      line-height: txf-rhythm-fallback($ln);
+    }
+    line-height: txf-rhythm($ln);
+  }
+}
+
+
+
+// Hyphens
+
+@mixin tx-hyphens($hp: manual) {
+  -epub-hyphens: $hp;
+  hyphens: $hp;
+}
+
+
+
+// Rhythm (Margin)
+
+@mixin tx-rhythm($leader: 0, $trailer: 0, $mrgt: 0, $mlft: 0, $fall: $tx-remFallback) {
+  @if $leader == $trailer {
+    $vertical-px: txf-rhythm-fallback($leader);
+    $vertical-rem: txf-rhythm($leader);
+    @if $mrgt == $mlft {
+      @if $fall == true {
+        margin: $vertical-px $mrgt;
+      }
+      margin: $vertical-rem $mrgt;
+    } @else {
+      @if $fall == true {
+        margin: $vertical-px $mrgt $vertical-px $mlft;
+      }
+      margin: $vertical-rem $mrgt $vertical-rem $mlft;
+    }
+  } @else {
+    @if $leader != 0 {
+      $mtop-px: txf-rhythm-fallback($leader);
+      $mtop-rem: txf-rhythm($leader);
+    } @else {
+      $mtop-px: 0;
+      $mtop-rem: 0;
+    }
+    @if $trailer != 0 {
+      $mbtm-px: txf-rhythm-fallback($trailer);
+      $mbtm-rem: txf-rhythm($trailer);
+    } @else {
+      $mbtm-px: 0;
+      $mbtm-rem: 0;
+    }
+    @if $mrgt == $mlft {
+      @if $fall == true {
+        margin: $mtop-px $mrgt $mbtm-px;
+      }
+      margin: $mtop-rem $mrgt $mbtm-rem;
+    } @else {
+      @if $fall == true {
+        margin: $mtop-px $mrgt $mbtm-px $mlft;
+      }
+      margin: $mtop-rem $mrgt $mbtm-rem $mlft;
+    }
+  }
+}
+
+
+
+// Rhythm Padding
+
+@mixin tx-rhythm-padding($padding-leader: 0, $padding-trailer: 0, $prgt: 0, $plft: 0, $fall: $tx-remFallback) {
+  @if $padding-leader == $padding-trailer {
+    $vertical-px: txf-rhythm-fallback($padding-leader);
+    $vertical-rem: txf-rhythm($padding-leader);
+    @if $prgt == $plft {
+      @if $fall == true {
+        padding: $vertical-px $prgt;
+      }
+      padding: $vertical-rem $prgt;
+    } @else {
+      @if $fall == true {
+        padding: $vertical-px $prgt $vertical-px $plft;
+      }
+      padding: $vertical-rem $prgt $vertical-rem $plft;
+    }
+  } @else {
+    @if $padding-leader != 0 {
+      $ptop-px: txf-rhythm-fallback($padding-leader);
+      $ptop-rem: txf-rhythm($padding-leader);
+    } @else {
+      $ptop-px: 0;
+      $ptop-rem: 0;
+    }
+    @if $padding-trailer != 0 {
+      $pbtm-px: txf-rhythm-fallback($padding-trailer);
+      $pbtm-rem: txf-rhythm($padding-trailer);
+    } @else {
+      $pbtm-px: 0;
+      $pbtm-rem: 0;
+    }
+    @if $prgt == $plft {
+      @if $fall == true {
+        padding: $ptop-px $prgt $pbtm-px;
+      }
+      padding: $ptop-rem $prgt $pbtm-rem;
+    } @else {
+      @if $fall == true {
+        padding: $ptop-px $prgt $pbtm-px $plft;
+      }
+      padding: $ptop-rem $prgt $pbtm-rem $plft;
+    }
+  }
+}
+
+
+
+// No Select
+
+@mixin tx-no-select($cond: true) {
+  @if $cond != true {
+    -webkit-touch-callout: default;
+    user-select: all;
+  } @else {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+}
+
+
+
+// Form Element Height in Grid Units
+
+@mixin tx-form-height($lines: 1, $brdw: 1px, $lh: false, $fall: $tx-remFallback) {
+  @if $lh == true {
+    @if $fall == true {
+      line-height: txf-rhythm-fallback($lines, $offset: 2 * $brdw);
+    }
+    line-height: txf-rhythm($lines, $offset: 2 * $brdw);
+  } @else {
+    @if $fall == true {
+      height: txf-rhythm-fallback($lines, $offset: 2 * $brdw);
+    }
+    height: txf-rhythm($lines, $offset: 2 * $brdw);
+  }
+}
+
+
+
+// Table Borders with Adjustment
+
+@mixin tx-table-borders($brdw: 1px, $lines: 1, $bstyle: solid, $bcolor: $black, $prgt: .5em, $plft: .5em, $fall: $tx-remFallback) {
+  $calculated-borderWidth-fallback: $brdw;
+  $calculated-borderWidth: $brdw / $fontSize * 1rem;
+  $calculated-verticalPadding-fallback: txf-rhythm-fallback($lines, $brdw);
+  $calculated-verticalPadding: txf-rhythm($lines, $brdw);
+  @if $lines != 0 {
+    @if $prgt == $plft and $prgt != 0 {
+      @if $fall == true {
+        padding: ($calculated-verticalPadding-fallback) ($prgt) ($calculated-verticalPadding-fallback + $calculated-borderWidth-fallback);
+      }
+      padding: ($calculated-verticalPadding) ($prgt) ($calculated-verticalPadding + $calculated-borderWidth);
+    } @else {
+      @if $fall == true {
+        padding: ($calculated-verticalPadding-fallback) ($prgt) ($calculated-verticalPadding-fallback + $calculated-borderWidth-fallback) ($plft);
+      }
+      padding: ($calculated-verticalPadding) ($prgt) ($calculated-verticalPadding + $calculated-borderWidth) ($plft);
+    }
+  }
+  border: $brdw $bstyle $bcolor;
+}
+
+
+
+// Layers
+
+@mixin tx-layer($lr: content, $shift: 0) {
+  @if $lr == 'over' {
+    z-index: (200 + $shift);
+  } @else if $lr == 'top' {
+    z-index: (100 + $shift);
+  } @else if $lr == 'content' {
+    z-index: (50 + $shift);
+  } @else if $lr == 'bottom' {
+    z-index: (0 + $shift);
+  } @else if $lr == 'under' {
+    z-index: (-1 + $shift);
+  }
+}
+
+
+
+// Sprites
+
+@mixin tx-sprite($name, $pos: true, $block: false, $pd: false) {
+  display: block;
+  @if $pos {
+    background: url(#{nth($name, 9)}) nth($name, 3) nth($name, 4);
+  } @else {
+    background: url(#{nth($name, 9)});
+  }
+  @if $block {
+    @include tx-sprite-block($name, $pd);
+  }
+}
+
+@mixin tx-sprite-block($name, $pd: false) {
+  width: nth($name, 5);
+  @if $pd {
+    overflow: hidden;
+    height: 0;
+    padding: nth($name, 6) 0 0;
+  } @else {
+    height: nth($name, 6);
+  }
+}
+
+@mixin tx-sprite-position($name) {
+  background-position: nth($name, 3) nth($name, 4);
+}
+
+@mixin tx-sprite-dpi($sptsX, $spts) {
+  background-image: url(#{nth($sptsX, 3)});
+  background-size: nth($spts, 1) nth($spts, 2);
+}
+
+@function txf-sprite-width($name) {
+  @return nth($name, 5);
+}
+
+@function txf-sprite-height($name) {
+  @return nth($name, 6);
+}
+
+
+
+// Extend Data URI Image
+
+@mixin tx-extend-image($class, $ie: $tx-IE) {
+  @if not $ie {
+    @extend #{'%image-' + $class};
+  } @else {
+    @extend #{'%ie-image-' + $class};
+  }
+}
+
+
+
+// Functions
+
+@function txf-rhythm($ln: 1, $offset: 0) {
+  $result: ($ln * $lineHeight - $offset) / $fontSize * 1rem;
+  @if #{$result} == '0rem' {
+    @return 0;
+  } @else {
+    @return $result;
+  }
+}
+
+@function txf-rhythm-fallback($ln: 1, $offset: 0) {
+  $result: ($ln * $lineHeight - $offset);
+  @if #{$result} == '0px' {
+    @return 0;
+  } @else {
+    @return $result;
+  }
+}
