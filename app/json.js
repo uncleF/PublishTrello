@@ -1,13 +1,9 @@
 var BOARD_JSON = (function() {
 
-  var request = require('request');
+  var request = require('request-promise');
 
-  function get(link, callback) {
-    request(link, function(error, response, data) {
-      if (!error && response.statusCode === 200) {
-        callback(JSON.parse(data));
-      }
-    });
+  function get(link) {
+    return request(link);
   }
 
   return {

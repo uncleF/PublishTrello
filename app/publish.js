@@ -1,92 +1,98 @@
 var PUBLISH_TRELLO = (function() {
 
   var json = require('./json');
+  var write = require('./write');
   var bdata = require('./bdata');
   var md = require('./md');
   var html = require('./html');
   var pdf = require('./pdf');
   var epub = require('./epub');
 
-  var q = require('q');
   var mdirp = require('mkdirp');
+  var fstream = require('fstream');
+  var tar = require('tar');
+  var zlib = require('zlib');
 
   var options;
-  var link;
-  var dir;
-  var file;
-  var css;
-  var filePath;
-
-  function init(initUrl, initDir, initOptions, initFile, initCSS) {
-    link = initUrl;
-    dir = initDir;
-    options = initOptions ? initOptions : {md: true};
-    file = initFile ? initFile : 'trelloBoard';
-    css = initCSS ? initCSS : __dirname + '/css/styles.css';
-    filePath = dir + '/' + file;
-    getData();
-  }
 
   function getData() {
-    json.get(link, processData);
+    return json.get(options.link);
   }
 
-  function processData(data) {
-    var lists;
-    var meta;
-    bdata.process(data);
-    lists = bdata.pipeLists();
-    meta = bdata.pipeMeta();
-    mdirp(dir);
-    q.fcall(function() {
-      outputMD(lists, meta);
+  function prepareData(response) {
+    bdata.process(JSON.parse(response));
+    mdirp(options.dir);
+  }
+
+  function processMD() {
+    md.process(bdata.pipeLists(), bdata.pipeMeta());
+    if (options.output.md) {
+      return write.file(md.pipe(), options.path, 'md');
+    }
+  }
+
+  function processHTML(markdownContent) {
+    if (options.output.html || options.output.pdf || options.output.epub) {
+      return html.process(markdownContent, bdata.pipeMeta(), options.css);
+    }
+  }
+
+  function writeHTML(htmlContent) {
+    if (options.output.html) {
+      return write.file(htmlContent, options.path, 'html');
+    }
+  }
+
+  function processPDF(htmlContent) {
+    if (options.output.pdf) {
+      return pdf.process(htmlContent, options.path);
+    }
+  }
+
+  function processEPUB(htmlContent) {
+    if (options.output.epub) {
+      return epub.process(htmlContent, bdata.pipeMeta(), options.path);
+    }
+  }
+
+  function archiveOutput() {
+    if (options.arch) {
+      fstream.Reader({'path': options.dir + '/', 'type': 'Directory'}).pipe(tar.Pack()).pipe(zlib.Gzip()).pipe(fstream.Writer({'path': options.path + '.tar.gz'}));
+    }
+  }
+
+  function publish() {
+    getData().then(function(response) {
+      prepareData(response);
     }).then(function() {
-      var markdown = md.pipe();
-      outputHTML(markdown, meta);
+      processMD();
     }).then(function() {
-      var promise = html.promise();
-      if (promise) {
-        promise.then(function() {
-          outputRest(meta);
-        });
-      } else {
-        outputRest(meta);
-      }
+      return processHTML(md.pipe());
+    }).then(function() {
+      var htmlContent = html.pipe();
+      writeHTML(htmlContent);
+      processPDF(htmlContent);
+      processEPUB(htmlContent);
+    }).then(function() {
+      archiveOutput();
+    }).catch(function(error) {
+      console.log(error);
+    }).done(function() {
+      console.log('Done');
     });
   }
 
-  function outputMD(lists, meta) {
-    if (options.md) {
-      md.process(lists, meta, filePath, false);
-    } else if (options.html || options.pdf || options.epub) {
-      md.process(lists, meta, filePath, true);
-    }
-  }
-
-  function outputHTML(markdown, meta) {
-    if (options.html) {
-      html.process(markdown, meta, css, filePath, false);
-    } else if (options.pdf || options.epub) {
-      html.process(markdown, meta, css, filePath, true);
-    }
-  }
-
-  function outputPDF(content) {
-    if (options.pdf) {
-      pdf.process(content, filePath);
-    }
-  }
-
-  function outputEPUB(content, meta) {
-    if (options.epub) {
-      epub.process(content, meta, filePath);
-    }
-  }
-
-  function outputRest(meta) {
-    var content = html.pipe();
-    outputPDF(content);
-    outputEPUB(content, meta);
+  function init(initOptions) {
+    options = {
+      link: initOptions.link,
+      dir: initOptions.dir,
+      file: initOptions.file ? initOptions.file : 'trelloBoard',
+      css: initOptions.css ? initOptions.css : __dirname + '/css/styles.css',
+      output: typeof initOptions.output === 'object' ? initOptions.output : {md: true},
+      arch: initOptions.arch ? true : false
+    };
+    options.path = options.dir + '/' + options.file;
+    publish();
   }
 
   return {

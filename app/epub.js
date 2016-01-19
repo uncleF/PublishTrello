@@ -27,7 +27,7 @@ var EPUB_DOCUMENT = (function() {
       author: 'Me',
       content: epubLists(html)
     };
-    new Epub(options, path + '.epub');
+    return new Epub(options, path + '.epub').promise;
   }
 
   return {

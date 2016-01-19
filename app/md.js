@@ -2,29 +2,26 @@ var MD_DOCUMENT = (function() {
 
   var md;
 
-  var write = require('./write');
-
   var _ = require('lodash');
 
   function mdLists(lists) {
+    var listsFragments = '';
     _.forEach(lists, function(value) {
-      md += '## ' + value.name + '\n\n';
-      mdCards(value.cards);
+      listsFragments += '## ' + value.name + '\n\n' + mdCards(value.cards);
     });
+    return listsFragments;
   }
 
   function mdCards(cards) {
+    var cardsFragments = '';
     _.forEach(cards, function(value) {
-      md += '### ' + '[' + value.name + '](' + value.url + ')' + '\n\n' + value.desc + '\n\n';
+      cardsFragments += '### ' + '[' + value.name + '](' + value.url + ')' + '\n\n' + value.desc + '\n\n';
     });
+    return cardsFragments;
   }
 
-  function process(lists, meta, path, dry) {
-    md = '# ' + meta.name + '\n\n';
-    mdLists(lists);
-    if (!dry) {
-      write.file(md, path, 'md');
-    }
+  function process(lists, meta) {
+    md = '# ' + meta.name + '\n\n' + mdLists(lists);
   }
 
   function pipe() {

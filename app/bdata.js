@@ -1,9 +1,9 @@
 var BOARD_DATA = (function() {
 
+  var _ = require('lodash');
+
   var lists = {};
   var meta = {};
-
-  var _ = require('lodash');
 
   function getLists(dataLists, dataCards) {
     _.forEach(dataLists, function(value) {
