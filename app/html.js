@@ -1,43 +1,43 @@
-var HTML_DOCUMENT = (function() {
+/*jslint node: true */
 
-  var fs = require('fs');
-  var markdown = require('markdown').markdown;
-  var uncss = require('uncss');
-  var cssmin = require('cssmin');
+'use strict';
 
-  var html;
-  var template = {
-    start: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>',
-    middle: '</title></head><body>',
-    end: '</article></body></html>'
-  };
+var fs = require('fs');
+var markdown = require('markdown').markdown;
+var uncss = require('uncss');
+var cssmin = require('cssmin');
 
-  function htmlLists(md) {
-    return markdown.toHTML(md);
-  }
+var html;
+var template = {
+  start: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>',
+  middle: '</title></head><body>',
+  end: '</article></body></html>'
+};
 
-  function htmlCards(data) {
-    return data.replace(/(<h3>(?:.|\t|\n)*?)(?=(?:<h2>|<h3>|<\/body>))/g, '<article class="card" lang="en">$1</article>');
-  }
+// HTML Content form the MD
+function htmlLists(md) {
+  return markdown.toHTML(md);
+}
 
-  function process(md, meta, css) {
-    var styles = fs.readFileSync(css, 'utf-8');
-    html = htmlCards(template.start + meta.name + template.middle + htmlLists(md)) + template.end;
-    return uncss(html, {raw: styles}, function(error, output) {
-      var tag = '<style>' + cssmin(output) + '</style></head>';
-      html = html.replace('</head>', tag);
-    });
-  }
+// Final HTML Content
+function htmlCards(data) {
+  return data.replace(/(<h3>(?:.|\t|\n)*?)(?=(?:<h2>|<h3>|<\/body>))/g, '<article class="card" lang="en">$1</article>');
+}
 
-  function pipe() {
-    return html;
-  }
+// Process
+function processData(md, meta, css) {
+  var styles = fs.readFileSync(css, 'utf-8');
+  html = htmlCards(template.start + meta.name + template.middle + htmlLists(md)) + template.end;
+  return uncss(html, {raw: styles}, function(error, output) {
+    var tag = '<style>' + cssmin(output) + '</style></head>';
+    html = html.replace('</head>', tag);
+  });
+}
 
-  return {
-    process: process,
-    pipe: pipe
-  };
+// Pipe HTML
+function pipe() {
+  return html;
+}
 
-})();
-
-module.exports = HTML_DOCUMENT;
+exports.processData = processData;
+exports.pipe = pipe;

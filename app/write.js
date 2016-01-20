@@ -1,15 +1,13 @@
-var FILE = (function() {
+/*jslint node: true */
 
-  var fs = require('fs');
+'use strict';
 
-  function file(data, path, ext) {
-    fs.writeFile((path + '.' + ext), data);
-  }
+var Promise = require('bluebird');
+var writeFile = Promise.promisify(require('fs').writeFile);
 
-  return {
-    file: file
-  };
+// Write COntent to File
+function file(data, path, ext) {
+  return writeFile((path + '.' + ext), data);
+}
 
-})();
-
-module.exports = FILE;
+exports.file = file;

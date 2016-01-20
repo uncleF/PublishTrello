@@ -1,15 +1,13 @@
-var BOARD_JSON = (function() {
+/*jslint node: true */
 
-  var request = require('request-promise');
+'use strict';
 
-  function get(link) {
-    return request(link);
-  }
+var Promise = require('bluebird');
+var request = Promise.promisify(require('request'));
 
-  return {
-    get: get
-  };
+// Get the JSON Data
+function get(link) {
+  return request(link);
+}
 
-})();
-
-module.exports = BOARD_JSON;
+exports.get = get;

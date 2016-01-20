@@ -1,39 +1,37 @@
-var EPUB_DOCUMENT = (function() {
+/*jslint node: true */
 
-  var _ = require('lodash');
-  var Epub = require('epub-gen');
+'use strict';
 
-  function epubLists(html) {
-    var result = [];
-    var contentArray;
-    html = html
-      .replace(/<!DOCTYPE html>.*<\/h1>/gi, '')
-      .replace('</body></html>', '');
-    contentArray = html.split('<h2>');
-    contentArray.shift();
-    _.forEach(contentArray, function(value, index) {
-      var components = value.split('</h2>');
-      result[index] = {
-        title: components[0],
-        data: components[1]
-      };
-    });
-    return result;
-  }
+var _ = require('lodash');
+var Epub = require('epub-gen');
 
-  function process(html, meta, path) {
-    var options = {
-      title: meta.name,
-      author: 'Me',
-      content: epubLists(html)
+// Get ePub Content
+function epubLists(html) {
+  var content = [];
+  var contentArray;
+  html = html
+    .replace(/<!DOCTYPE html>.*<\/h1>/gi, '')
+    .replace('</body></html>', '');
+  contentArray = html.split('<h2>');
+  contentArray.shift();
+  _.forEach(contentArray, function(value, index) {
+    var components = value.split('</h2>');
+    content[index] = {
+      title: components[0],
+      data: components[1]
     };
-    return new Epub(options, path + '.epub').promise;
-  }
+  });
+  return content;
+}
 
-  return {
-    process: process
+// Process
+function processData(html, meta, path) {
+  var options = {
+    title: meta.name,
+    author: meta.author,
+    content: epubLists(html)
   };
+  return new Epub(options, path + '.epub').promise;
+}
 
-})();
-
-module.exports = EPUB_DOCUMENT;
+exports.processData = processData;

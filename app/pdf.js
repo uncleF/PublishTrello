@@ -1,15 +1,13 @@
-var PDF_DOCUMENT = (function() {
+/*jslint node: true */
 
-  var wkhtmltopdf = require('wkhtmltopdf');
+'use strict';
 
-  function process(html, path) {
-    wkhtmltopdf(html, {output: path + '.pdf'});
-  }
+var Promise = require('bluebird');
+var wkhtmltopdf = Promise.promisify(require('wkhtmltopdf'));
 
-  return {
-    process: process
-  };
+// Process
+function processData(html, path) {
+  return wkhtmltopdf(html, {output: path + '.pdf'});
+}
 
-})();
-
-module.exports = PDF_DOCUMENT;
+exports.processData = processData;

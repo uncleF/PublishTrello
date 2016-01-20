@@ -1,38 +1,38 @@
-var MD_DOCUMENT = (function() {
+/*jslint node: true */
 
-  var md;
+'use strict';
 
-  var _ = require('lodash');
+var _ = require('lodash');
 
-  function mdLists(lists) {
-    var listsFragments = '';
-    _.forEach(lists, function(value) {
-      listsFragments += '## ' + value.name + '\n\n' + mdCards(value.cards);
-    });
-    return listsFragments;
-  }
+var md;
 
-  function mdCards(cards) {
-    var cardsFragments = '';
-    _.forEach(cards, function(value) {
-      cardsFragments += '### ' + '[' + value.name + '](' + value.url + ')' + '\n\n' + value.desc + '\n\n';
-    });
-    return cardsFragments;
-  }
+// MD Lists
+function mdLists(lists) {
+  var listsFragments = '';
+  _.forEach(lists, function(value) {
+    listsFragments += '## ' + value.name + '\n\n' + mdCards(value.cards);
+  });
+  return listsFragments;
+}
 
-  function process(lists, meta) {
-    md = '# ' + meta.name + '\n\n' + mdLists(lists);
-  }
+// MD Cards
+function mdCards(cards) {
+  var cardsFragments = '';
+  _.forEach(cards, function(value) {
+    cardsFragments += '### ' + '[' + value.name + '](' + value.url + ')' + '\n\n' + value.desc + '\n\n';
+  });
+  return cardsFragments;
+}
 
-  function pipe() {
-    return md;
-  }
+// Process
+function processData(lists, meta) {
+  md = '# ' + meta.name + '\n\n' + mdLists(lists);
+}
 
-  return {
-    process: process,
-    pipe: pipe
-  };
+// Pipe MD
+function pipe() {
+  return md;
+}
 
-})();
-
-module.exports = MD_DOCUMENT;
+exports.processData = processData;
+exports.pipe = pipe;

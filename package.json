@@ -5,12 +5,13 @@
   "main": "app/publish.js",
   "private": true,
   "dependencies": {
+    "bluebird": "^3.1.1",
     "cssmin": "^0.4.3",
     "epub-gen": "0.0.12",
     "lodash": "^3.10.1",
     "markdown": "^0.5.0",
     "mkdirp": "^0.5.1",
-    "request-promise": "^2.0.0",
+    "node-delete": "^0.1.2",
     "uncss": "^0.12.1",
     "wkhtmltopdf": "^0.1.5"
   },

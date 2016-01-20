@@ -1,104 +1,146 @@
-var PUBLISH_TRELLO = (function() {
+/*jslint node: true */
 
-  var json = require('./json');
-  var write = require('./write');
-  var bdata = require('./bdata');
-  var md = require('./md');
-  var html = require('./html');
-  var pdf = require('./pdf');
-  var epub = require('./epub');
+'use strict';
 
-  var mdirp = require('mkdirp');
-  var fstream = require('fstream');
-  var tar = require('tar');
-  var zlib = require('zlib');
+var json = require('./json');
+var write = require('./write');
+var bdata = require('./bdata');
+var md = require('./md');
+var html = require('./html');
+var pdf = require('./pdf');
+var epub = require('./epub');
 
-  var options;
+var Promise = require('bluebird');
+var _ = require('lodash');
+var del = require('node-delete');
+var mdirp = require('mkdirp');
+var fstream = require('fstream');
+var tar = require('tar');
+var zlib = require('zlib');
 
-  function getData() {
-    return json.get(options.link);
+var options = {};
+
+// Get JSON Data
+function getData() {
+  mdirp(options.dir);
+  return json.get(options.link);
+}
+
+// Process JSON Data
+function prepareData(response) {
+  bdata.processData(JSON.parse(response.body), options);
+}
+
+// Process MD
+function processMD() {
+  md.processData(bdata.pipeLists(), bdata.pipeMeta());
+  return false;
+}
+
+// Write Processed MD to File
+function writeMD() {
+  if (options.output.md) {
+    return write.file(md.pipe(), options.path, 'md');
   }
+}
 
-  function prepareData(response) {
-    bdata.process(JSON.parse(response));
-    mdirp(options.dir);
+// Process HTML
+function processHTML() {
+  if (options.output.html || options.output.pdf || options.output.epub) {
+    return html.processData(md.pipe(), bdata.pipeMeta(), options.css);
   }
+  return false;
+}
 
-  function processMD() {
-    md.process(bdata.pipeLists(), bdata.pipeMeta());
-    if (options.output.md) {
-      return write.file(md.pipe(), options.path, 'md');
-    }
+// Write Processed HTML to File
+function writeHTML(htmlContent) {
+  if (options.output.html) {
+    return write.file(htmlContent, options.path, 'html');
   }
+  return false;
+}
 
-  function processHTML(markdownContent) {
-    if (options.output.html || options.output.pdf || options.output.epub) {
-      return html.process(markdownContent, bdata.pipeMeta(), options.css);
-    }
+// Process PDF and Write it to File
+function processPDF(htmlContent) {
+  if (options.output.pdf) {
+    return pdf.processData(htmlContent, options.path);
   }
+  return false;
+}
 
-  function writeHTML(htmlContent) {
-    if (options.output.html) {
-      return write.file(htmlContent, options.path, 'html');
-    }
+// Process ePub and Write it to File
+function processEPUB(htmlContent) {
+  if (options.output.epub) {
+    return epub.processData(htmlContent, bdata.pipeMeta(), options.path);
   }
+  return false;
+}
 
-  function processPDF(htmlContent) {
-    if (options.output.pdf) {
-      return pdf.process(htmlContent, options.path);
-    }
-  }
+// Process MD and Write it to File
+function writeAll() {
+  del.sync([options.dir + '/*']);
+  var htmlContent = html.pipe();
+  return [
+    writeMD(),
+    writeHTML(htmlContent),
+    processPDF(htmlContent),
+    processEPUB(htmlContent)
+  ];
+}
 
-  function processEPUB(htmlContent) {
-    if (options.output.epub) {
-      return epub.process(htmlContent, bdata.pipeMeta(), options.path);
-    }
-  }
-
-  function archiveOutput() {
-    if (options.arch) {
-      fstream.Reader({'path': options.dir + '/', 'type': 'Directory'}).pipe(tar.Pack()).pipe(zlib.Gzip()).pipe(fstream.Writer({'path': options.path + '.tar.gz'}));
-    }
-  }
-
-  function publish() {
-    getData().then(function(response) {
-      prepareData(response);
-    }).then(function() {
-      processMD();
-    }).then(function() {
-      return processHTML(md.pipe());
-    }).then(function() {
-      var htmlContent = html.pipe();
-      writeHTML(htmlContent);
-      processPDF(htmlContent);
-      processEPUB(htmlContent);
-    }).then(function() {
-      archiveOutput();
-    }).catch(function(error) {
-      console.log(error);
-    }).done(function() {
-      console.log('Done');
+// Archive Outputted Files
+function archiveOutput(promises) {
+  if (options.arch) {
+    return Promise.all(promises).then(function() {
+      fstream
+        .Reader({'path': options.dir + '/', 'type': 'Directory'})
+        .pipe(tar.Pack())
+        .pipe(zlib.Gzip())
+        .pipe(fstream.Writer({'path': options.path + '.tar.gz'}));
     });
   }
+  return false;
+}
 
-  function init(initOptions) {
-    options = {
-      link: initOptions.link,
-      dir: initOptions.dir,
-      file: initOptions.file ? initOptions.file : 'trelloBoard',
-      css: initOptions.css ? initOptions.css : __dirname + '/css/styles.css',
-      output: typeof initOptions.output === 'object' ? initOptions.output : {md: true},
-      arch: initOptions.arch ? true : false
-    };
-    options.path = options.dir + '/' + options.file;
-    publish();
+// Catch and Log an Error
+function logError(error) {
+  console.error(error);
+}
+
+// Done
+function done() {
+  console.log('Done');
+}
+
+// Process
+function publish() {
+  getData()
+  .then(prepareData)
+  .then(processMD)
+  .then(processHTML)
+  .then(writeAll)
+  .then(archiveOutput)
+  .catch(logError)
+  .done(done);
+}
+
+// Initialization
+function init(initOptions) {
+  _.extend(options, initOptions);
+  if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
+    options.file = 'trelloBoard';
   }
+  if (!Object.prototype.hasOwnProperty.call(options, 'css')) {
+    options.css = __dirname + '/css/styles.css';
+  }
+  if (!Object.prototype.hasOwnProperty.call(options, 'output')) {
+    options.output = {md: true};
+  }
+  if (!Object.prototype.hasOwnProperty.call(options, 'author')) {
+    options.author = 'Trello';
+  }
+  options.path = options.dir + '/' + options.file;
+  publish();
+}
 
-  return {
-    init: init
-  };
-
-})();
-
-module.exports = PUBLISH_TRELLO;
+exports.init = init;

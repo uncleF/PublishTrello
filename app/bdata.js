@@ -1,59 +1,74 @@
-var BOARD_DATA = (function() {
+/*jslint node: true */
 
-  var _ = require('lodash');
+'use strict';
 
-  var lists = {};
-  var meta = {};
+var _ = require('lodash');
 
-  function getLists(dataLists, dataCards) {
-    _.forEach(dataLists, function(value) {
-      lists[value.id] = {
-        name: value.name,
-        cards: getCards(dataCards)
-      };
-    });
-  }
+var lists = {};
+var meta = {};
 
-  function getCards(dataCards) {
-    var cards = [];
-    _.forEach(dataCards, function(value) {
-      var card = {
+// Get Lists
+function getLists(data, options) {
+  var processedLists = {};
+  _.forEach(data.lists, function(value) {
+    var id = value.id;
+    var name = value.name;
+    var cards;
+    if (!options.exclude || options.exclude.indexOf(name) === -1) {
+      cards = getCards(data.cards, id);
+      if (cards.length > 0) {
+        processedLists[id] = {
+          name: name,
+          cards: cards
+        };
+      }
+    }
+  });
+  return processedLists;
+}
+
+// Get Cards for the List
+function getCards(dataCards, listId) {
+  var cards = [];
+  _.forEach(dataCards, function(value) {
+    var card;
+    var desc = value.desc;
+    if (desc !== '' && value.idList === listId) {
+      card = {
         name: value.name,
         url: value.url,
-        desc: value.desc
+        desc: desc
       };
-      if (card.desc !== '') {
-        cards.push(card);
-      }
-    });
-    return cards;
-  }
+      cards.push(card);
+    }
+  });
+  return cards;
+}
 
-  function getMeta(data) {
-    meta = {
-      name: data.name
-    };
-  }
-
-  function process(data) {
-    getLists(data.lists, data.cards);
-    getMeta(data);
-  }
-
-  function pipeLists() {
-    return lists;
-  }
-
-  function pipeMeta() {
-    return meta;
-  }
-
+// Get Meta Data
+function getMeta(data, options) {
   return {
-    pipeLists: pipeLists,
-    pipeMeta: pipeMeta,
-    process: process
+    name: data.name,
+    author: options.author
   };
+}
 
-})();
+// Process Board Data
+function processData(data, options) {
+  lists = getLists(data, options);
+  meta = getMeta(data, options);
+}
 
-module.exports = BOARD_DATA;
+// Pipe Lists
+function pipeLists() {
+  return lists;
+}
+
+// Pipe Meta Object
+function pipeMeta() {
+  return meta;
+}
+
+exports.pipeLists = pipeLists;
+exports.pipeMeta = pipeMeta;
+exports.processData = processData;

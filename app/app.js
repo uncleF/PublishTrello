@@ -1,3 +1,7 @@
+/*jslint node: true */
+
+'use strict';
+
 var publish = require('./publish');
 
 var options = {
@@ -8,7 +12,10 @@ var options = {
     html: true,
     pdf: true,
     epub: true
-  }
+  },
+  arch: true,
+  exclude: ['Links'],
+  author: 'Blumpkin Pie'
 };
 
 publish.init(options);
