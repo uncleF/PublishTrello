@@ -5,7 +5,7 @@
 var publish = require('./publish');
 
 var options = {
-	link: 'http://192.168.1.101:8000/data/board.json',
+	link: 'http://localhost:8000/data/board.json',
   dir: 'output',
   output: {
     md: true,
@@ -18,4 +18,4 @@ var options = {
   author: 'Blumpkin Pie'
 };
 
-publish.init(options);
+publish.output(options);

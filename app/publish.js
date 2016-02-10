@@ -114,18 +114,26 @@ function done() {
 
 // Process
 function publish() {
-  getData()
-  .then(prepareData)
-  .then(processMD)
-  .then(processHTML)
-  .then(writeAll)
-  .then(archiveOutput)
-  .catch(logError)
-  .done(done);
+  return new Promise(function(resolve, reject) {
+    getData()
+    .then(prepareData)
+    .then(processMD)
+    .then(processHTML)
+    .then(writeAll)
+    .then(archiveOutput)
+    .catch(function(error) {
+      logError(error);
+      reject();
+    })
+    .done(function() {
+      done();
+      resolve();
+    });
+  });
 }
 
 // Initialization
-function init(initOptions) {
+function output(initOptions) {
   _.extend(options, initOptions);
   if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
     options.file = 'trelloBoard';
@@ -140,7 +148,7 @@ function init(initOptions) {
     options.author = 'Trello';
   }
   options.path = options.dir + '/' + options.file;
-  publish();
+  return publish();
 }
 
-exports.init = init;
+exports.output = output;
