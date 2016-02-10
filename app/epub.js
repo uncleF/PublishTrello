@@ -25,11 +25,12 @@ function epubLists(html) {
 }
 
 // Process
-function processData(html, meta, path) {
+function processData(html, css, meta, path) {
   var options = {
     title: meta.name,
     author: meta.author,
-    content: epubLists(html)
+    content: epubLists(html),
+    css: css
   };
   return new Epub(options, path + '.epub').promise;
 }

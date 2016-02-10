@@ -13,7 +13,7 @@ var epub = require('./epub');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var del = require('node-delete');
-var mdirp = require('mkdirp');
+var mkdirp = require('mkdirp');
 var fstream = require('fstream');
 var tar = require('tar');
 var zlib = require('zlib');
@@ -22,7 +22,7 @@ var options = {};
 
 // Get JSON Data
 function getData() {
-  mdirp(options.dir);
+  mkdirp(options.dir);
   return json.get(options.link);
 }
 
@@ -34,7 +34,7 @@ function prepareData(response) {
 // Process MD
 function processMD() {
   md.processData(bdata.pipeLists(), bdata.pipeMeta());
-  return false;
+  return true;
 }
 
 // Write Processed MD to File
@@ -71,7 +71,7 @@ function processPDF(htmlContent) {
 // Process ePub and Write it to File
 function processEPUB(htmlContent) {
   if (options.output.epub) {
-    return epub.processData(htmlContent, bdata.pipeMeta(), options.path);
+    return epub.processData(htmlContent, html.pipeCSS(), bdata.pipeMeta(), options.path);
   }
   return false;
 }
@@ -123,17 +123,17 @@ function publish() {
     .then(archiveOutput)
     .catch(function(error) {
       logError(error);
-      reject();
+      reject(options);
     })
     .done(function() {
       done();
-      resolve();
+      resolve(options);
     });
   });
 }
 
 // Initialization
-function output(initOptions) {
+function init(initOptions) {
   _.extend(options, initOptions);
   if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
     options.file = 'trelloBoard';
@@ -148,6 +148,11 @@ function output(initOptions) {
     options.author = 'Trello';
   }
   options.path = options.dir + '/' + options.file;
+}
+
+// Output
+function output(initOptions) {
+  init(initOptions);
   return publish();
 }
 
