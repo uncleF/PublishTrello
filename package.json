@@ -5,6 +5,7 @@
   "main": "app/publish.js",
   "private": true,
   "dependencies": {
+    "archiver": "^0.21.0",
     "bluebird": "^3.1.1",
     "cssmin": "^0.4.3",
     "epub-gen": "0.0.12",

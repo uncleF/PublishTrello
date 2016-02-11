@@ -12,11 +12,10 @@ var epub = require('./epub');
 
 var Promise = require('bluebird');
 var _ = require('lodash');
+var fs = require('fs');
 var del = require('node-delete');
 var mkdirp = require('mkdirp');
-var fstream = require('fstream');
-var tar = require('tar');
-var zlib = require('zlib');
+var archiver = require('archiver');
 
 var options = {};
 
@@ -92,11 +91,23 @@ function writeAll() {
 function archiveOutput(promises) {
   if (options.arch) {
     return Promise.all(promises).then(function() {
-      fstream
-        .Reader({'path': options.dir + '/', 'type': 'Directory'})
-        .pipe(tar.Pack())
-        .pipe(zlib.Gzip())
-        .pipe(fstream.Writer({'path': options.path + '.tar.gz'}));
+      return new Promise(function(resolve, reject) {
+        var output;
+        var archive;
+        output = fs.createWriteStream(options.path + '.zip');
+        output.on('close', function() {
+          resolve();
+        });
+        archive = archiver('zip');
+        archive.bulk([{
+          expand: true,
+          cwd: options.dir,
+          src: ['*.*', '!*.zip'],
+          dest: './'
+        }]);
+        archive.pipe(output);
+        archive.finalize();
+      });
     });
   }
   return false;
