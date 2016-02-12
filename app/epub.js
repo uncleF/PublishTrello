@@ -24,7 +24,7 @@ function epubLists(html) {
   return content;
 }
 
-// Process
+// Process EPub
 function processData(html, css, meta, path) {
   var options = {
     title: meta.name,

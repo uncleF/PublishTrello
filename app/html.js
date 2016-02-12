@@ -20,9 +20,7 @@ function htmlCards(data) {
   return data.replace(/(<h3>(?:.|\t|\n)*?)(?=(?:<h2>|<h3>|<\/body>))/g, '<article class="card" lang="en">$1</article>');
 }
 
-// Process Styles
-
-// Process
+// Process HTML
 function processData(md, meta, cssPath) {
   var styles = fs.readFileSync(cssPath, 'utf-8');
   html = htmlCards(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${meta.name}</title></head><body>${htmlLists(md)}</article></body></html>`);

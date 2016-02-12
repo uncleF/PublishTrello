@@ -24,7 +24,7 @@ function mdCards(cards) {
   return cardsFragments;
 }
 
-// Process
+// Process MD
 function processData(lists, meta) {
   md = '# ' + meta.name + '\n\n' + mdLists(lists);
 }
