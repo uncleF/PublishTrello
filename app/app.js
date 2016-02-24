@@ -4,8 +4,15 @@
 
 var publish = require('./publish');
 
+var qconf = require('qconf');
+
+var config = qconf();
+
+var API_KEY = config.get('key');
+var TOKEN = config.get('token');
+
 var options = {
-	link: 'http://localhost:8000/data/board.json',
+  url: 'https://trello.com/b/BPadvEsr',
   dir: 'output',
   output: {
     md: true,
@@ -15,7 +22,8 @@ var options = {
   },
   arch: true,
   exclude: ['Links'],
-  author: 'Blumpkin Pie'
+  key: API_KEY,
+  token: TOKEN
 };
 
 publish.output(options);

@@ -16,18 +16,19 @@ var fs = require('fs');
 var del = require('node-delete');
 var mkdirp = require('mkdirp');
 var archiver = require('archiver');
+var chalk = require('chalk');
 
 var options = {};
 
 // Get JSON Data
 function getData() {
   mkdirp(options.dir);
-  return json.get(options.link);
+  return json.get(options);
 }
 
 // Process JSON Data
-function prepareData(response) {
-  bdata.processData(JSON.parse(response.body), options);
+function prepareData(data) {
+  bdata.processData(data, options);
 }
 
 // Process MD
@@ -115,31 +116,31 @@ function archiveOutput(promises) {
 
 // Catch and Log an Error
 function logError(error) {
-  console.error(error);
+  console.error(chalk.red(`✗ ${error}\n`));
 }
 
 // Done
 function done() {
-  console.log('Done');
+  console.log(chalk.green('✔ Done\n'));
 }
 
 // Process
 function publish() {
   return new Promise(function(resolve, reject) {
     getData()
-    .then(prepareData)
-    .then(processMD)
-    .then(processHTML)
-    .then(writeAll)
-    .then(archiveOutput)
-    .catch(function(error) {
-      logError(error);
-      reject(options);
-    })
-    .done(function() {
-      done();
-      resolve(options);
-    });
+      .then(prepareData)
+      .then(processMD)
+      .then(processHTML)
+      .then(writeAll)
+      .then(archiveOutput)
+      .catch(function(error) {
+        logError(error);
+        reject(options);
+      })
+      .done(function() {
+        done();
+        resolve(options);
+      });
   });
 }
 

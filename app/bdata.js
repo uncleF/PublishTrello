@@ -45,11 +45,16 @@ function getCards(dataCards, listId) {
   return cards;
 }
 
+// Get Authors
+function getAuthors(members) {
+  return members.map(member => member.fullName).join(' ');
+}
+
 // Get Meta Data
 function getMeta(data, options) {
   return {
     name: data.name,
-    author: options.author
+    author: getAuthors(data.members)
   };
 }
 
