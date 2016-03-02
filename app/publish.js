@@ -31,6 +31,23 @@ function prepareData(data) {
   bdata.processData(data, options);
 }
 
+function getFileName(file) {
+  file = file.replace(/[^a-zA-Z0-9\-]([a-zA-Z0-9\-]{1}|)/g, function(value) { return value.replace(/[^a-zA-Z0-9\-]/g, '').toUpperCase(); });
+  if (file.length > 150) {
+    file = file.substring(0, 150);
+  }
+  return file;
+}
+
+// Result Path
+function getFilePath() {
+  if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
+    options.file = getFileName(bdata.pipeMeta().name);
+    options.path = options.dir + '/' + options.file;
+  }
+  return true;
+}
+
 // Process MD
 function processMD() {
   md.processData(bdata.pipeLists(), bdata.pipeMeta());
@@ -129,6 +146,7 @@ function publish() {
   return new Promise(function(resolve, reject) {
     getData()
       .then(prepareData)
+      .then(getFilePath)
       .then(processMD)
       .then(processHTML)
       .then(writeAll)
@@ -147,19 +165,12 @@ function publish() {
 // Initialization
 function init(initOptions) {
   _.extend(options, initOptions);
-  if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
-    options.file = 'trelloBoard';
-  }
   if (!Object.prototype.hasOwnProperty.call(options, 'css')) {
     options.css = __dirname + '/css/styles.css';
   }
   if (!Object.prototype.hasOwnProperty.call(options, 'output')) {
     options.output = {md: true};
   }
-  if (!Object.prototype.hasOwnProperty.call(options, 'author')) {
-    options.author = 'Trello';
-  }
-  options.path = options.dir + '/' + options.file;
 }
 
 // Output
