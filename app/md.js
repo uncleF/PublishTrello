@@ -10,7 +10,7 @@ var md;
 function mdLists(lists) {
   var listsFragments = '';
   _.forEach(lists, function(value) {
-    listsFragments += '## ' + value.name + '\n\n' + mdCards(value.cards);
+    listsFragments += `## ${value.name}\n\n${mdCards(value.cards)}`;
   });
   return listsFragments;
 }
@@ -19,14 +19,14 @@ function mdLists(lists) {
 function mdCards(cards) {
   var cardsFragments = '';
   _.forEach(cards, function(value) {
-    cardsFragments += '### ' + '[' + value.name + '](' + value.url + ')' + '\n\n' + value.desc + '\n\n';
+    cardsFragments += `### [${value.name}](${value.url})\n\n${value.desc}\n\n`;
   });
   return cardsFragments;
 }
 
 // Process MD
 function processData(lists, meta) {
-  md = '# ' + meta.name + '\n\n' + mdLists(lists);
+  md = `# ${meta.name}\n\n${mdLists(lists)}`;
 }
 
 // Pipe MD

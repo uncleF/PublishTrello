@@ -9,10 +9,8 @@ var Epub = require('epub-gen');
 function epubLists(html) {
   var content = [];
   var contentArray;
-  html = html
-    .replace(/<!DOCTYPE html>.*<\/h1>/gi, '')
-    .replace('</body></html>', '');
-  contentArray = html.split('<h2>');
+  html = html.replace(/(?:<!DOCTYPE html>.*<\/h1>|<\/section>|<\/body><\/html>)/gi, '');
+  contentArray = html.split('<section class="list"><h2>');
   contentArray.shift();
   _.forEach(contentArray, function(value, index) {
     var components = value.split('</h2>');
@@ -24,7 +22,7 @@ function epubLists(html) {
   return content;
 }
 
-// Process EPub
+// Process ePub
 function processData(html, css, meta, path) {
   var options = {
     title: meta.name,

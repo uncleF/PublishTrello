@@ -13,7 +13,6 @@ var epub = require('./epub');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fs = require('fs');
-var del = require('node-delete');
 var mkdirp = require('mkdirp');
 var archiver = require('archiver');
 var chalk = require('chalk');
@@ -31,45 +30,46 @@ function prepareData(data) {
   bdata.processData(data, options);
 }
 
-function getFileName(file) {
+// Get Correct Filename
+function getFilename(file) {
   file = file.replace(/[^a-zA-Z0-9\-]([a-zA-Z0-9\-]{1}|)/g, function(value) { return value.replace(/[^a-zA-Z0-9\-]/g, '').toUpperCase(); });
-  if (file.length > 150) {
-    file = file.substring(0, 150);
-  }
-  return file;
+  return file.length > 150 ? file.substring(0, 150) : file;
 }
 
 // Result Path
 function getFilePath() {
   if (!Object.prototype.hasOwnProperty.call(options, 'file')) {
-    options.file = getFileName(bdata.pipeMeta().name);
-    options.path = options.dir + '/' + options.file;
+    options.file = getFilename(bdata.pipeMeta().name);
+    options.path = `${options.dir}/${options.file}`;
   }
   return true;
 }
 
 // Process MD
 function processMD() {
-  md.processData(bdata.pipeLists(), bdata.pipeMeta());
+  if (options.output.md) {
+    md.processData(bdata.pipeLists(), bdata.pipeMeta());
+  }
   return true;
 }
 
-// Write Processed MD to File
+// Write MD to File
 function writeMD() {
   if (options.output.md) {
     return write.file(md.pipe(), options.path, 'md');
   }
+  return true;
 }
 
 // Process HTML
 function processHTML() {
   if (options.output.html || options.output.pdf || options.output.epub) {
-    return html.processData(md.pipe(), bdata.pipeMeta(), options.css);
+    return html.processData(bdata.pipeLists(), bdata.pipeMeta(), options.css);
   }
   return false;
 }
 
-// Write Processed HTML to File
+// Write HTML to File
 function writeHTML(htmlContent) {
   if (options.output.html) {
     return write.file(htmlContent, options.path, 'html');
@@ -77,7 +77,7 @@ function writeHTML(htmlContent) {
   return false;
 }
 
-// Process PDF and Write it to File
+// Process PDF
 function processPDF(htmlContent) {
   if (options.output.pdf) {
     return pdf.processData(htmlContent, options.path);
@@ -85,7 +85,7 @@ function processPDF(htmlContent) {
   return false;
 }
 
-// Process ePub and Write it to File
+// Process ePub
 function processEPUB(htmlContent) {
   if (options.output.epub) {
     return epub.processData(htmlContent, html.pipeCSS(), bdata.pipeMeta(), options.path);
@@ -93,9 +93,8 @@ function processEPUB(htmlContent) {
   return false;
 }
 
-// Process MD and Write it to File
+// Write Everything
 function writeAll() {
-  del.sync([options.dir + '/*']);
   var htmlContent = html.pipe();
   return [
     writeMD(),
@@ -105,14 +104,14 @@ function writeAll() {
   ];
 }
 
-// Archive Outputted Files
+// Archive Output
 function archiveOutput(promises) {
   if (options.arch) {
     return Promise.all(promises).then(function() {
       return new Promise(function(resolve, reject) {
         var output;
         var archive;
-        output = fs.createWriteStream(options.path + '.zip');
+        output = fs.createWriteStream(`${options.path}.zip`);
         output.on('close', function() {
           resolve();
         });

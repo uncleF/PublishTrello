@@ -7,7 +7,7 @@ var writeFile = Promise.promisify(require('fs').writeFile);
 
 // Write Content to File
 function file(data, path, ext) {
-  return writeFile((path + '.' + ext), data);
+  return writeFile(`${path}.${ext}`, data);
 }
 
 exports.file = file;
