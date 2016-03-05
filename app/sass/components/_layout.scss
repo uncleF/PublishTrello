@@ -14,3 +14,12 @@ body {
   padding: 0 $gap;
   background: $background;
 }
+
+
+
+/* Images */
+
+.image {
+  @include tx-rhythm(1, 1);
+  display: block;
+}
