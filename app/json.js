@@ -12,7 +12,7 @@ function parseJSON(response) {
 
 // Get the JSON Data
 function get(options) {
-  var link = `${options.url}.json?fields=name,desc&lists=open&list_fields=name&cards=open&members=owners&key=${options.key}&token=${options.token}`;
+  var link = `${options.url}.json?fields=name,desc&lists=open&list_fields=name&cards=visible&card_checklists=all&card_attachments=true&members=owners&key=${options.key}&token=${options.token}`;
   return request(link).then(parseJSON);
 }
 

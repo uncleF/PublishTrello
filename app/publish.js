@@ -140,11 +140,6 @@ function output(initOptions) {
     return false;
   }
 
-  // Catch and Log an Error
-  function logError(error) {
-    console.error(chalk.red(`✗ ${error}\n`));
-  }
-
   // Done
   function done() {
     console.log(chalk.green('✔ Done\n'));
@@ -160,14 +155,11 @@ function output(initOptions) {
         .then(processHTML)
         .then(writeAll)
         .then(archiveOutput)
-        .catch(function(error) {
-          logError(error);
-          reject(options);
-        })
-        .done(function() {
+        .then(function() {
           done();
           resolve(options);
-        });
+        })
+        .catch(reject);
     });
   }
 

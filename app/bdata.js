@@ -7,15 +7,26 @@ var _ = require('lodash');
 var lists = {};
 var meta = {};
 
+// Get Cards for the List
+function getCards(data, listId) {
+  var cards = [];
+  _.forEach(data.cards, card => {
+    if ((card.desc !== '' || card.checklists.length > 0 || card.attachments.length > 0) && card.idList === listId) {
+      cards.push(card);
+    }
+  });
+  return cards;
+}
+
 // Get Lists
 function getLists(data, options) {
   var processedLists = {};
-  _.forEach(data.lists, function(value) {
+  _.forEach(data.lists, value => {
     var id = value.id;
     var name = value.name;
     var cards;
     if (!options.exclude || options.exclude.indexOf(name) === -1) {
-      cards = getCards(data.cards, id);
+      cards = getCards(data, id);
       if (cards.length > 0) {
         processedLists[id] = {
           name: name,
@@ -25,24 +36,6 @@ function getLists(data, options) {
     }
   });
   return processedLists;
-}
-
-// Get Cards for the List
-function getCards(dataCards, listId) {
-  var cards = [];
-  _.forEach(dataCards, function(value) {
-    var card;
-    var desc = value.desc;
-    if (desc !== '' && value.idList === listId) {
-      card = {
-        name: value.name,
-        url: value.url,
-        desc: desc
-      };
-      cards.push(card);
-    }
-  });
-  return cards;
 }
 
 // Get Authors

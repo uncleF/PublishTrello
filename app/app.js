@@ -12,7 +12,7 @@ var API_KEY = config.get('key');
 var TOKEN = config.get('token');
 
 var options = {
-  url: 'https://trello.com/b/BPadvEsr',
+  url: 'https://trello.com/b/HRtOG2Px',
   dir: 'output',
   output: {
     md: true,
@@ -21,7 +21,7 @@ var options = {
     epub: true
   },
   arch: true,
-  exclude: ['Links'],
+  exclude: [],
   key: API_KEY,
   token: TOKEN
 };

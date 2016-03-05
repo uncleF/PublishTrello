@@ -16,23 +16,97 @@ var css;
 var templates = {
   htmlTemplate: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>{{ title }}</title></head><body><h1>{{ title }}</h1>{{ lists }}</body></html>',
   listTemplate: '<section class="list"><h2>{{ listHeader }}</h2>{{ cards }}</section>',
-  cardTemplate: '<article class="card"><h3><a href="{{ cardURL }}">{{ cardHeader }}</a></h3>{{ cardText }}</article>'
+  cardTemplate: '<article class="card"><h3><a href="{{ cardURL }}">{{ cardHeader }}</a></h3>{{ cardText }}{{ cardAttachments.images }}{{ cardChecklists }}{{ cardAttachments.attachments }}{{ cardAttachments.links }}</article>',
+  checklistTemplate: '<dl class="checklist"><dt>{{ checklistHeader }}</dt>{{ checklistItems }}</dl>',
+  itemTemplate: '<dd>{{ checklistItem }}</dd>',
+  itemCheckedTemplate: '<dd><strike>{{ checklistItem }}</strike></dd>',
+  imageTemplate: '<img src={{ imageURL }} class="image">',
+  attachmentsTemplate: '<dl class="attachments"><dt>{{ attachmentsHeader }}</dt>{{ attachmentsItems }}</dl>',
+  attachmentTemplate: '<dd><a href="{{ attachmentURL }}">{{ attachmentItem }}</a></dd>',
 };
 
 // HTML Lists
 function htmlLists(lists) {
   var listsFragments = '';
-  _.forEach(lists, function(value) {
-    listsFragments += nunjucks.renderString(templates.listTemplate, {listHeader: value.name, cards: htmlCards(value.cards)});
+  _.forEach(lists, list => {
+    var templateData = {
+      listHeader: list.name,
+      cards: htmlCards(list.cards)
+    };
+    listsFragments += nunjucks.renderString(templates.listTemplate, templateData);
   });
   return listsFragments;
+}
+
+function htmlAttachments(atachments) {
+  var imagesFragments = '';
+  var attachmentsFragments = '';
+  var linksFragments = '';
+  _.forEach(atachments, attachment => {
+    var templateData;
+    var template;
+    if (attachment.previews.length > 0) {
+      imagesFragments += nunjucks.renderString(templates.imageTemplate, {imageURL: attachment.url});
+    } else {
+      templateData = {
+        attachmentURL: attachment.url,
+        attachmentItem: attachment.name
+      };
+      template = nunjucks.renderString(templates.attachmentTemplate, templateData);
+      if (attachment.bytes) {
+        attachmentsFragments += template;
+      } else {
+        linksFragments += template;
+      }
+    }
+  });
+  return {
+    images: imagesFragments,
+    attachments: attachmentsFragments !== '' ? nunjucks.renderString(templates.attachmentsTemplate, {attachmentsHeader: 'Attachments', attachmentsItems: attachmentsFragments}) : '',
+    links: linksFragments !== '' ? nunjucks.renderString(templates.attachmentsTemplate, {attachmentsHeader: 'Links', attachmentsItems: linksFragments}) : '',
+  };
+}
+
+// HTML Attachments
+function htmlChecklistItems(checklist) {
+  var itemsFragments = '';
+  _.forEach(checklist, item => {
+    var template;
+    if (item.state === 'incomplete') {
+      template = templates.itemTemplate;
+    } else {
+      template = templates.itemCheckedTemplate;
+    }
+    itemsFragments += nunjucks.renderString(template, {checklistItem: item.name});
+  });
+  return itemsFragments;
+}
+
+// HTML Checklist
+function htmlChecklist(checklists) {
+  var checklistsFragments = '';
+  _.forEach(checklists, checklist => {
+    var templateData = {
+      checklistHeader: checklist.name,
+      checklistItems: htmlChecklistItems(checklist.checkItems)
+    };
+    checklistsFragments += nunjucks.renderString(templates.checklistTemplate, templateData);
+  });
+  return checklistsFragments;
 }
 
 // HTML Cards
 function htmlCards(cards) {
   var cardsFragments = '';
-  _.forEach(cards, function(value) {
-    cardsFragments += nunjucks.renderString(templates.cardTemplate, {cardHeader: escapeHTML(value.name), cardURL: value.url, cardText: markdown.toHTML(value.desc)});
+  _.forEach(cards, card => {
+    var templateData = {
+      cardHeader: escapeHTML(card.name),
+      cardURL: card.url,
+      cardText: markdown.toHTML(card.desc),
+      cardChecklists: card.checklists.length > 0 ? htmlChecklist(card.checklists) : '',
+      cardAttachments: card.attachments.length > 0 ? htmlAttachments(card.attachments) : {images: '', attachments: '', links: ''}
+    };
+    cardsFragments += nunjucks.renderString(templates.cardTemplate, templateData);
   });
   return cardsFragments;
 }

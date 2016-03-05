@@ -131,7 +131,7 @@ dl {
 }
 
 dt {
-  @include tx-rhythm(1);
+  @include tx-rhythm(1, 1);
   font-weight: bold;
 }
 
