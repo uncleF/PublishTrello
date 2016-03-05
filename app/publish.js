@@ -17,7 +17,7 @@ var mkdirp = require('mkdirp');
 var archiver = require('archiver');
 var chalk = require('chalk');
 
-function PublishTrello(initOptions) {
+function output(initOptions) {
 
   var options = {
     output: {
@@ -182,18 +182,9 @@ function PublishTrello(initOptions) {
     }
   }
 
-  // Output
-  function output() {
-    init();
-    return publish();
-  }
+  init();
+  return publish();
 
-  output();
-
-}
-
-function output(option) {
-  return new PublishTrello(option);
 }
 
 exports.output = output;
