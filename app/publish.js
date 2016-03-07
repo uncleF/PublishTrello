@@ -172,7 +172,7 @@ function output(initOptions) {
         .then(archiveOutput)
         .then(function() {
           done();
-          resolve();
+          resolve(options);
         })
         .catch(function(error) {
           var message = logError(error);
