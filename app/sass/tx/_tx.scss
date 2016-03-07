@@ -1,6 +1,6 @@
 // Page Boundaries
 
-@mixin tx-set-boundaries($minw: $desktop-min, $maxw: $desktop-max, $minh: 100%, $center: true) {
+@mixin tx-set-boundaries($minw: map-get($breakpoints, desktopMin), $maxw: map-get($breakpoints, desktopMax), $minh: 100%, $center: true) {
   @if $minw != none and $minw != 0 {
     min-width: $minw;
   }
@@ -49,7 +49,6 @@
 @mixin tx-baseline($fz: $fontSize, $fall: $tx-remFallback) {
   font-size: $fz;
   line-height: $lineHeight;
-  line-height: ($lineHeight / $fontSize) * $fontSizeQuotient * 1rem;
 }
 
 
@@ -134,10 +133,7 @@
     height: txf-rhythm($lines, 2 * $brdw);
   }
   @if $lh == true {
-    @if $fall == true {
-      line-height: txf-rhythm-fallback($lines, 2 * $brdw);
-    }
-    line-height: txf-rhythm($lines, 2 * $brdw);
+    line-height: $lineHeight * $lines - ($brdw / ($fontSize / 1px)) * 2;
   }
 }
 
@@ -145,16 +141,25 @@
 
 // Font Size
 
-@mixin tx-font-size($fzn, $ln: 1, $fall: $tx-remFallback) {
-  @if $fall == true {
-    font-size: $fzn;
+@mixin tx-font-size($fzn, $ln: approx, $fall: $tx-remFallback) {
+  @if type-of($fzn) == number {
+    $size: $fzn;
+  } @else {
+    $size: map-get($fontSizes, $fzn);
   }
-  font-size: #{$fzn / $fontSize}rem;
-  @if $ln != none {
-    @if $fall == true and $ln != 0 {
-      line-height: txf-rhythm-fallback($ln);
-    }
-    line-height: txf-rhythm($ln);
+  @if $fall == true {
+    font-size: $size;
+  }
+  $fznRem: $size / $fontSize;
+  font-size: #{$fznRem}rem;
+  @if $ln != none and $ln != approx and $ln != 0 {
+    line-height: ($lineHeight * $ln) * ($fontSize / $size);
+  }
+  @if $ln == 0 {
+    line-height: 0;
+  }
+  @if $ln == approx {
+    line-height: ($lineHeight * ceil($size / ($fontSize * $lineHeight))) * ($fontSize / $size);
   }
 }
 
@@ -171,7 +176,7 @@
 
 // Rhythm (Margin)
 
-@mixin tx-rhythm($leader: 0, $trailer: 0, $mrgt: 0, $mlft: 0, $fall: $tx-remFallback) {
+@mixin tx-rhythm($leader: 0, $trailer: 0, $mrgt: 0, $mlft: 0, $fall: $tx-remFallback, $px: false) {
   @if $leader == $trailer {
     $vertical-px: txf-rhythm-fallback($leader);
     $vertical-rem: txf-rhythm($leader);
@@ -179,12 +184,16 @@
       @if $fall == true {
         margin: $vertical-px $mrgt;
       }
-      margin: $vertical-rem $mrgt;
+      @if $px == false {
+        margin: $vertical-rem $mrgt;
+      }
     } @else {
       @if $fall == true {
         margin: $vertical-px $mrgt $vertical-px $mlft;
       }
-      margin: $vertical-rem $mrgt $vertical-rem $mlft;
+      @if $px == false {
+        margin: $vertical-rem $mrgt $vertical-rem $mlft;
+      }
     }
   } @else {
     @if $leader != 0 {
@@ -205,12 +214,16 @@
       @if $fall == true {
         margin: $mtop-px $mrgt $mbtm-px;
       }
-      margin: $mtop-rem $mrgt $mbtm-rem;
+      @if $px == false {
+        margin: $mtop-rem $mrgt $mbtm-rem;
+      }
     } @else {
       @if $fall == true {
         margin: $mtop-px $mrgt $mbtm-px $mlft;
       }
-      margin: $mtop-rem $mrgt $mbtm-rem $mlft;
+      @if $px == false {
+        margin: $mtop-rem $mrgt $mbtm-rem $mlft;
+      }
     }
   }
 }
@@ -219,7 +232,7 @@
 
 // Rhythm Padding
 
-@mixin tx-rhythm-padding($padding-leader: 0, $padding-trailer: 0, $prgt: 0, $plft: 0, $fall: $tx-remFallback) {
+@mixin tx-rhythm-padding($padding-leader: 0, $padding-trailer: 0, $prgt: 0, $plft: 0, $fall: $tx-remFallback, $px: false) {
   @if $padding-leader == $padding-trailer {
     $vertical-px: txf-rhythm-fallback($padding-leader);
     $vertical-rem: txf-rhythm($padding-leader);
@@ -227,12 +240,16 @@
       @if $fall == true {
         padding: $vertical-px $prgt;
       }
-      padding: $vertical-rem $prgt;
+      @if $px == false {
+        padding: $vertical-rem $prgt;
+      }
     } @else {
       @if $fall == true {
         padding: $vertical-px $prgt $vertical-px $plft;
       }
-      padding: $vertical-rem $prgt $vertical-rem $plft;
+      @if $px == false {
+        padding: $vertical-rem $prgt $vertical-rem $plft;
+      }
     }
   } @else {
     @if $padding-leader != 0 {
@@ -253,12 +270,16 @@
       @if $fall == true {
         padding: $ptop-px $prgt $pbtm-px;
       }
-      padding: $ptop-rem $prgt $pbtm-rem;
+      @if $px == false {
+        padding: $ptop-rem $prgt $pbtm-rem;
+      }
     } @else {
       @if $fall == true {
         padding: $ptop-px $prgt $pbtm-px $plft;
       }
-      padding: $ptop-rem $prgt $pbtm-rem $plft;
+      @if $px == false {
+        padding: $ptop-rem $prgt $pbtm-rem $plft;
+      }
     }
   }
 }
@@ -281,12 +302,9 @@
 
 // Form Element Height in Grid Units
 
-@mixin tx-form-height($lines: 1, $brdw: 1px, $lh: false, $fall: $tx-remFallback) {
+@mixin tx-form-height($lines: 1, $brdw: 1, $lh: false, $fall: $tx-remFallback) {
   @if $lh == true {
-    @if $fall == true {
-      line-height: txf-rhythm-fallback($lines, $offset: 2 * $brdw);
-    }
-    line-height: txf-rhythm($lines, $offset: 2 * $brdw);
+    line-height: $lineHeight * $lines - ($brdw / ($fontSize / 1px)) * 2;
   } @else {
     @if $fall == true {
       height: txf-rhythm-fallback($lines, $offset: 2 * $brdw);
@@ -342,12 +360,11 @@
 
 // Sprites
 
-@mixin tx-sprite($name, $pos: true, $block: false, $pd: false) {
-  display: block;
+@mixin tx-sprite($name, $pos: true, $block: false, $pd: false, $color: null) {
   @if $pos {
-    background: url(#{nth($name, 9)}) nth($name, 3) nth($name, 4);
+    background: $color url(#{nth($name, 9)}) nth($name, 3) nth($name, 4);
   } @else {
-    background: url(#{nth($name, 9)});
+    background: $color url(#{nth($name, 9)});
   }
   @if $block {
     @include tx-sprite-block($name, $pd);
@@ -365,13 +382,12 @@
   }
 }
 
-@mixin tx-sprite-position($name) {
-  background-position: nth($name, 3) nth($name, 4);
+@mixin tx-sprite-image($name) {
+  background-image: url(#{nth($name, 3)});
 }
 
-@mixin tx-sprite-dpi($sptsX, $spts) {
-  background-image: url(#{nth($sptsX, 3)});
-  background-size: nth($spts, 1) nth($spts, 2);
+@mixin tx-sprite-position($name) {
+  background-position: nth($name, 3) nth($name, 4);
 }
 
 @function txf-sprite-width($name) {
@@ -380,6 +396,11 @@
 
 @function txf-sprite-height($name) {
   @return nth($name, 6);
+}
+
+@mixin tx-sprite-dpi($sptsX, $spts) {
+  background-image: url(#{nth($sptsX, 3)});
+  background-size: nth($spts, 1) nth($spts, 2);
 }
 
 
@@ -399,7 +420,7 @@
 // Functions
 
 @function txf-rhythm($ln: 1, $offset: 0) {
-  $result: ($ln * $lineHeight - $offset) / $fontSize * 1rem;
+  $result: ($ln * $fontSize * $lineHeight - $offset) / $fontSize * 1rem;
   @if #{$result} == '0rem' {
     @return 0;
   } @else {
@@ -408,10 +429,34 @@
 }
 
 @function txf-rhythm-fallback($ln: 1, $offset: 0) {
-  $result: ($ln * $lineHeight - $offset);
+  $result: ($ln * $fontSize * $lineHeight - $offset);
   @if #{$result} == '0px' {
     @return 0;
   } @else {
     @return $result;
   }
+}
+
+
+
+// Utilities
+
+@function txf-pow($base, $exp) {
+  $result: 1;
+  @if $exp == 0 {
+    @return 1;
+  } @else {
+    @for $i from 1 through $exp {
+      $result: $result * $base;
+    }
+    @return $result;
+  }
+}
+
+@function txf-breakpointRem($point) {
+  @return #{(map-get($breakpoints, $point) / $fontSize) * $fontSizeQuotient}em
+}
+
+@function txf-breakpoint($point) {
+  @return map-get($breakpointsRem, $point);
 }

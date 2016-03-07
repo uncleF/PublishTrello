@@ -9,7 +9,7 @@ body {
   @include tx-hyphens;
   color: $text;
   font-family: $font-sans;
-  font-feature-settings: 'liga';
+  font-feature-settings: 'liga', 'kern';
 }
 
 %HTML5BlocksStyle {
@@ -80,37 +80,53 @@ summary {
 h1 {
   @extend %headerStyle;
   @include tx-rhythm(1, 2);
-  @include tx-font-size($h1-fontSize, 2);
+  @include tx-font-size(h1);
 }
 
 h2 {
+  $header-borderColor: $grayDark;
+
   @extend %headerStyle;
-  @include tx-rhythm(3, 1);
-  @include tx-font-size($h2-fontSize, 2);
+  @include tx-rhythm(2, 1);
+  @include tx-font-size(h2);
+  border-bottom: 2px solid $header-borderColor;
 }
 
 h3 {
   @extend %headerStyle;
-  @include tx-rhythm(3, 1);
-  @include tx-font-size($h3-fontSize, 1);
+  @include tx-rhythm(1, 1);
+  @include tx-font-size(h3, 1.35);
+
+  a {
+    color: $text;
+    text-decoration: none;
+
+    &:hover,
+    &:active {
+      color: $link;
+      text-decoration: underline;
+    }
+
+  }
+
 }
 
 h4 {
   @extend %headerStyle;
   @include tx-rhythm(1, 1);
-  @include tx-font-size($h4-fontSize, 1);
+  @include tx-font-size(h4, 1.25);
 }
 
 h5 {
   @extend %headerStyle;
   @include tx-rhythm(1, 1);
-  @include tx-font-size($h5-fontSize, 1);
+  @include tx-font-size(h5);
 }
 
 h6 {
   @extend %headerStyle;
   @include tx-rhythm(1, 1);
-  @include tx-font-size($h6-fontSize, 1);
+  @include tx-font-size(h6);
 }
 
 %marginStyle {
@@ -131,12 +147,12 @@ dl {
 }
 
 dt {
-  @include tx-rhythm(1, 1);
+  @include tx-rhythm(1, .5);
   font-weight: bold;
 }
 
 dd {
-  @include tx-rhythm(0, 1, $mlft: 1.5em);
+  @include tx-rhythm(.5, .5, $mlft: 1.5em);
   font-style: italic;
 }
 
@@ -329,7 +345,7 @@ kbd {
 
   @extend %attentionStyle;
   @include tx-inline-block;
-  @include tx-grid-height(1);
+  @include tx-grid-height(1, 1);
   padding: 0 .5em;
   border-radius: 3px;
   background: $kbd-bg;
@@ -341,7 +357,7 @@ kbd {
 }
 
 %supSubStyle {
-  @include tx-font-size($fontSizeSmall, 0);
+  @include tx-font-size(small, 0);
   position: relative;
 }
 
@@ -356,11 +372,11 @@ sub {
 }
 
 big {
-  @include tx-font-size($fontSizeLarge, 0);
+  @include tx-font-size(large, 0);
 }
 
 small {
-  @include tx-font-size($fontSizeSmall, 0);
+  @include tx-font-size(small, 0);
 }
 
 u {

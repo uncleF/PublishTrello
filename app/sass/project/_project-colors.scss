@@ -5,7 +5,8 @@ $red: #d9534f;
 $blue: #337ab7;
 $blueDark: #23527c;
 $purple: #6f5499;
-$gray: #ccc;
+$gray: #eee;
+$grayDark: #ccc;
 $black: #333;
 
 $underlineOpacity: .5;
@@ -19,6 +20,7 @@ $link: $blue;
 $visited: $purple;
 $hover: $red;
 $active: $blueDark;
+$focus-outlineColor: $gray;
 
 $background: $white;
 

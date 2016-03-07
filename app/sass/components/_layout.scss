@@ -6,13 +6,98 @@ html {
 }
 
 body {
-  $body-maxWidth: ($desktop-min - $gap * 2);
+  $body-width: (txf-breakpoint(desktopMin));
 
-  @include tx-set-boundaries(none, $body-maxWidth);
   @include tx-scroll-bar(true);
   position: relative;
+  box-sizing: border-box;
+  max-width: $body-width;
   padding: 0 $gap;
+  margin: 0 auto;
   background: $background;
+}
+
+
+
+/* Card */
+
+.card {
+  @include tx-rhythm(1, 2);
+}
+
+
+
+/* Checklist */
+
+.checklist {
+  $checklist-background: $gray;
+  $checklist-size: 15px;
+  $checklist-boxWidth: 2px;
+  $checklist-boxColor: $blue;
+
+  @include tx-rhythm-padding(0, .5, $prgt: $gap, $plft: $gap);
+  overflow: hidden;
+  background: $checklist-background;
+
+  dd {
+    position: relative;
+
+    &:before {
+      @include tx-pseudo;
+      top: 2px;
+      right: 100%;
+      width: $checklist-size;
+      height: $checklist-size;
+      border: $checklist-boxWidth solid $checklist-boxColor;
+      margin: 0 5px 0 0;
+    }
+
+  }
+
+  strike {
+    position: relative;
+    display: block;
+
+    &:before,
+    &:after {
+      @include tx-pseudo;
+      width: ($checklist-size + 7px);
+      height: $checklist-boxWidth;
+      margin: 0 4px 0 0;
+      background: $checklist-boxColor;
+      transform-origins: 50% 50%;
+    }
+
+    &:before {
+      top: 10px;
+      right: 100%;
+      transform: rotate(45deg);
+    }
+
+    &:after {
+      top: 11px;
+      right: 100%;
+      transform: rotate(-45deg);
+    }
+
+  }
+
+}
+
+
+/* Attachments */
+
+.attachments {
+  $attachments-background: $gray;
+
+  @include tx-rhythm-padding(0, .5, $prgt: $gap, $plft: $gap)
+  overflow: hidden;
+  background: $attachments-background;
+
+  dd {
+    font-style: normal;
+  }
+
 }
 
 

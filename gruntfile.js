@@ -67,7 +67,7 @@ module.exports = function(grunt) {
 
     sass: {
       options: {
-        sourceMap: true,
+        sourceMap: false,
         precision: 5
       },
       generateCSS: {
