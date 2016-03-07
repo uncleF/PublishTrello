@@ -140,9 +140,24 @@ function output(initOptions) {
     return false;
   }
 
+  // Error
+  function logError(error) {
+    var message;
+    if (error.code) {
+      if (error.code === 'ENOTFOUND') {
+        message = `Invalid host - ${error.host}`;
+      } else {
+        message = error.code;
+      }
+    }
+    console.log(chalk.red(`✘ ${message || error}\n`));
+    return message || error;
+  }
+
   // Done
   function done() {
     console.log(chalk.green('✔ Done\n'));
+    return true;
   }
 
   // Process
@@ -157,9 +172,12 @@ function output(initOptions) {
         .then(archiveOutput)
         .then(function() {
           done();
-          resolve(options);
+          resolve();
         })
-        .catch(reject);
+        .catch(function(error) {
+          var message = logError(error);
+          reject(message);
+        });
     });
   }
 

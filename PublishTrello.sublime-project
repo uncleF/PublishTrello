@@ -30,6 +30,10 @@
       "path": "app/sass/"
     }, {
       "follow_symlinks": true,
+      "name": "PublishTrello: Demo",
+      "path": "demo/"
+    }, {
+      "follow_symlinks": true,
       "name": "PublishTrello: Config",
       "path": "config/"
     }

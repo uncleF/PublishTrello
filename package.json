@@ -34,7 +34,7 @@
     "qconf": "^2.2.0"
   },
   "scripts": {
-    "start": "node app/app.js"
+    "start": "node demo/app.js"
   },
   "author": "unclef.npm@gmail.com",
   "license": "ISC",

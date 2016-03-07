@@ -2,7 +2,7 @@
 
 'use strict';
 
-var publish = require('./publish');
+var publish = require('../app/publish');
 
 var qconf = require('qconf');
 

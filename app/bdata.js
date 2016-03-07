@@ -2,6 +2,7 @@
 
 'use strict';
 
+var Promise = require('bluebird');
 var _ = require('lodash');
 
 var lists = {};
@@ -40,7 +41,7 @@ function getLists(data, options) {
 
 // Get Authors
 function getAuthors(members) {
-  return members.map(member => member.fullName).join(' ');
+  return members.map(member => member.fullName).join(', ');
 }
 
 // Get Meta Data
@@ -53,8 +54,15 @@ function getMeta(data, options) {
 
 // Process Board Data
 function processData(data, options) {
-  lists = getLists(data, options);
-  meta = getMeta(data, options);
+  return new Promise(function(resolve, reject) {
+    lists = getLists(data, options);
+    meta = getMeta(data, options);
+    if (_.isEmpty(lists) ||  _.isEmpty(meta)) {
+      reject('This board appears to be empty.');
+    } else {
+      resolve();
+    }
+  });
 }
 
 // Pipe Lists
