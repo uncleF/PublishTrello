@@ -17,11 +17,11 @@ node_modules
 bower_components
 .npm-debug.log
 output
+demo
 config
 
 #TX
 
-output
 tests
 
 *.build.zip
